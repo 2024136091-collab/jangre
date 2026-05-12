@@ -3,92 +3,47 @@
 ## WBS 차트
 
 ```mermaid
-mindmap
-  root((텍스트 RPG<br/>Flutter))
-    1.프로젝트 환경
-      1.1 개발 환경
-        Flutter SDK 설치
-        Android Studio·에뮬레이터
-        VS Code 플러그인
-      1.2 리포지토리 구조
-        폴더 트리 생성
-        .gitignore 설정
-        Hello World 빌드 확인
-    2.기획·설계 문서
-      2.1 기획
-        00-vision.md
-        01-requirements.md
-      2.2 일정
-        02-wbs.md
-        04-schedule.md
-      2.3 아키텍처
-        03-architecture.md
-        ADR-0001 플랫폼
-        ADR-0002 상태 관리
-        ADR-0003 데이터 저장
-    3.도메인 레이어
-      3.1 모델
-        Character
-        Item · Equipment
-        Enemy
-        StoryNode
-        GameState
-      3.2 서비스
-        CombatService
-        StoryEngine
-        ProgressionService
-    4.데이터 레이어
-      4.1 저장소
-        SaveRepository
-        StoryRepository
-      4.2 Hive 설정
-        CharacterAdapter
-        GameStateAdapter
-    5.스토리 데이터
-      5.1 설계
-        챕터 1 노드 구조도
-        엔딩 5종 조건
-      5.2 구현
-        Dart 상수 코드화
-        분기 연결 검증
-    6.프레젠테이션 레이어
-      6.1 공통
-        앱 테마
-        GoRouter 라우팅
-      6.2 화면
-        HomeScreen
-        CharacterCreateScreen
-        StoryScreen
-        CombatScreen
-        InventoryScreen
-        CharacterScreen
-        EndingScreen
-    7.상태 관리
-      CharacterNotifier
-      GameStateNotifier
-      CombatNotifier
-    8.테스트
-      8.1 단위 테스트
-        CombatService
-        StoryEngine
-        ProgressionService
-      8.2 통합 테스트
-        저장·불러오기 사이클
-        엔딩 도달 경로
-    9.문서·배포
-      9.1 문서
-        docs/setup.md
-        docs/deploy.md
-        docs/testing.md
-        README.md
-        AGENTS.md
-      9.2 배포
-        Release APK 빌드
-        GitHub Releases 업로드
-    10.발표 자료
-      중간 발표 슬라이드
-      최종 발표 슬라이드
-      데모 시연 시나리오
+graph TD
+    ROOT["🎮 텍스트 RPG\nFlutter"]
+
+    ROOT --> A["1. 기획·설계\n4d"]
+    ROOT --> B["2. 환경 구축\n4d"]
+    ROOT --> C["3. 게임 로직\n13.5d"]
+    ROOT --> D["4. UI·상태\n14d"]
+    ROOT --> E["5. 품질·운영\n9d"]
+    ROOT --> F["6. 발표\n3.5d"]
+
+    A --> A1["기획 문서\n00-vision / 01-requirements"]
+    A --> A2["일정 문서\n02-wbs / 04-schedule"]
+    A --> A3["아키텍처·ADR\n03-architecture / ADR×3"]
+
+    B --> B1["개발 환경\nFlutter SDK · 에뮬레이터"]
+    B --> B2["리포지토리\n폴더구조 · Hello World"]
+
+    C --> C1["도메인 모델\nCharacter · Item · Enemy\nStoryNode · GameState"]
+    C --> C2["서비스\nCombatService · StoryEngine\nProgressionService"]
+    C --> C3["데이터 레이어\nSaveRepository · Hive 어댑터"]
+    C --> C4["스토리 데이터\n챕터1 노드 · 엔딩 5종"]
+
+    D --> D1["공통\n테마 · GoRouter"]
+    D --> D2["화면 7개\nHome · CharCreate · Story\nCombat · Inventory · Char · Ending"]
+    D --> D3["상태 관리\nCharacterNotifier\nGameStateNotifier · CombatNotifier"]
+
+    E --> E1["테스트\n단위 3개 · 통합 2개"]
+    E --> E2["문서\nsetup · deploy · testing\nREADME · AGENTS.md"]
+    E --> E3["배포\nRelease APK · GitHub Releases"]
+
+    F --> F1["중간 발표\nMarp 7분"]
+    F --> F2["최종 발표\nMarp 12분"]
+    F --> F3["데모 시나리오"]
+
+    style ROOT fill:#4A90D9,color:#fff
+    style A fill:#7B68EE,color:#fff
+    style B fill:#7B68EE,color:#fff
+    style C fill:#E8734A,color:#fff
+    style D fill:#E8734A,color:#fff
+    style E fill:#5BA85A,color:#fff
+    style F fill:#5BA85A,color:#fff
 ```
 
 ---
