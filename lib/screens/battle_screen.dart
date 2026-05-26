@@ -109,10 +109,19 @@ class _BattleScreenState extends State<BattleScreen> {
     gs.goToScene(nextId);
 
     if (playerWon) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const StoryScreen()),
-      );
+      final nextScene = gs.currentScene;
+      if (nextScene.type == SceneType.ending) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => EndingScreen(scene: nextScene)),
+          (_) => false,
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const StoryScreen()),
+        );
+      }
     } else {
       final defeatScene = Scene(
         id: 'defeat',

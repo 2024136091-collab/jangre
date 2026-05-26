@@ -76,25 +76,27 @@ Data          →  SaveRepository (Hive) · StoryRepository
 
 ---
 
-## 현재까지 완료한 것
+## 현재까지 완료한 것 (세션4 기준)
 
 - ✅ 비전 · 요구사항 · WBS · 일정 문서
 - ✅ 4레이어 아키텍처 설계 + Mermaid 다이어그램
 - ✅ ADR 3개 (Flutter · Riverpod · Hive)
-- ✅ `docs/setup.md` · `docs/architecture.md`
-- ✅ Flutter Hello World 빌드 성공
-- 🔲 도메인 모델 구현 (다음 주)
-- 🔲 StoryScreen · CombatScreen 프로토타입 (다음 주)
+- ✅ `docs/setup.md` · `docs/deploy.md` · `docs/testing.md`
+- ✅ Flutter 앱 코드 구현 (Must 기능 100%)
+  - M1 캐릭터 스탯 · M2 스토리 분기 · M3 턴제 전투
+  - M4 인벤토리 · M5 다중 엔딩 3종
+- ✅ 데모 시연 가능 상태
+
+전체 진척: **Must 기능 100%** (목표 50% 초과 달성)
 
 ---
 
-## 다음 주 (12주차) 목표
+## 다음 주 (14주차) 목표
 
-1. `Character` · `StoryNode` · `GameState` 모델 구현
-2. `StoryEngine` 기본 분기 동작
-3. `StoryScreen` UI — 텍스트 출력 + 선택지 버튼
-4. `CombatScreen` UI — HP바 + 행동 버튼
-5. **데모 시연 가능 상태** 목표
+1. Hive 저장·불러오기 (Should S01)
+2. 단위 테스트 작성
+3. 전투 밸런스 튜닝
+4. Should 기능 추가 시작
 
 ---
 
