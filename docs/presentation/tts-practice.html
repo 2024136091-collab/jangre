@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>중간 발표 TTS 연습 — Jangre</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --accent: #e2c27d;
+      --accent2: #e94560;
+      --text: #eaeaea;
+      --text-muted: #888;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 헤더 */
+    header {
+      background: var(--surface);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--accent2);
+    }
+    header h1 { font-size: 1.1rem; color: var(--accent); }
+    #timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+      background: #0f3460;
+      padding: 4px 16px;
+      border-radius: 8px;
+      min-width: 80px;
+      text-align: center;
+    }
+    #timer.warn { color: var(--accent2); }
+
+    /* 슬라이드 번호 */
+    #slide-counter {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* 메인 */
+    main {
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    /* 슬라이드 패널 */
+    #slide-panel {
+      flex: 1;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 32px;
+      border: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+    }
+    #slide-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent2);
+    }
+    #slide-body {
+      flex: 1;
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    /* TTS 스크립트 패널 */
+    #script-panel {
+      width: 340px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+    }
+    #script-panel h3 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #script-text {
+      flex: 1;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #ccc;
+      overflow-y: auto;
+    }
+    #script-text .spoken {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* 컨트롤 */
+    #controls {
+      background: var(--surface);
+      padding: 16px 24px;
+      border-top: 1px solid #0f3460;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.35; cursor: default; }
+    #btn-prev { background: #0f3460; color: #fff; }
+    #btn-play { background: var(--accent2); color: #fff; min-width: 100px; }
+    #btn-next { background: #0f3460; color: #fff; }
+    #btn-stop { background: #444; color: #fff; }
+    #btn-replay { background: #333; color: var(--accent); }
+
+    .sep { flex: 1; }
+
+    label { color: var(--text-muted); font-size: 0.85rem; }
+    #speed-range { width: 100px; accent-color: var(--accent); }
+    #speed-val { color: var(--accent); font-weight: bold; min-width: 28px; display: inline-block; }
+
+    /* 진행 바 */
+    #progress-bar-wrap {
+      background: #0f3460;
+      height: 6px;
+      width: 100%;
+    }
+    #progress-bar {
+      height: 100%;
+      background: var(--accent2);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    /* 힌트 */
+    #hint {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<header>
+  <h1>⚔️ Jangre — 중간 발표 TTS 연습</h1>
+  <span id="slide-counter">1 / 9</span>
+  <div id="timer">0:00</div>
+</header>
+
+<main>
+  <div id="slide-panel">
+    <div id="slide-title"></div>
+    <div id="slide-body"></div>
+  </div>
+  <div id="script-panel">
+    <h3>🎙 TTS 스크립트</h3>
+    <div id="script-text"></div>
+  </div>
+</main>
+
+<div id="controls">
+  <button class="btn" id="btn-prev">◀ 이전</button>
+  <button class="btn" id="btn-play">▶ 재생</button>
+  <button class="btn" id="btn-stop">⏹ 중지</button>
+  <button class="btn" id="btn-replay">🔁 이 슬라이드 반복</button>
+  <span class="sep"></span>
+  <label>속도: <input type="range" id="speed-range" min="0.6" max="1.6" step="0.1" value="1.0" />
+  <span id="speed-val">1.0</span>×</label>
+</div>
+
+<div id="hint">단축키: Space = 재생/일시정지 · ← → = 슬라이드 이동 · R = 이 슬라이드 반복</div>
+
+<script>
+// ──────────────────────────────────────────────
+// 슬라이드 데이터
+// ──────────────────────────────────────────────
+const slides = [
+  {
+    title: '🗡️ 텍스트 RPG — Jangre',
+    body: `바이브 코딩 프로젝트 중간 발표
+신구대학교 컴퓨터소프트웨어학과
+앱프로그래밍응용 | 2024136091`,
+    script: `안녕하세요. 오늘 중간 발표를 맡은 학번 2024136091입니다.
+저의 바이브 코딩 프로젝트 주제는 텍스트 RPG, Jangre입니다.
+잘 부탁드립니다.`
+  },
+  {
+    title: '한 줄 소개',
+    body: `선택이 캐릭터를 성장시키고 세계를 바꾸는
+모바일 텍스트 RPG
+
+• 플랫폼: Flutter (Android / iOS)
+• 저장: Hive 오프라인 슬롯 3개
+• 규모: 엔딩 5종 이상, Must 기능 11개`,
+    script: `한 줄 소개입니다.
+선택이 캐릭터를 성장시키고 세계를 바꾸는 모바일 텍스트 RPG입니다.
+Flutter로 개발해 Android와 iOS를 동시에 지원하며,
+오프라인 저장 슬롯 3개와 5종 이상의 엔딩을 목표로 합니다.`
+  },
+  {
+    title: '왜 어려운 주제를 골랐나',
+    body: `처음 후보           바꾼 이유
+─────────────────────────────
+습관 트래커   →   CRUD만 있어 도전이 없음
+플래시카드    →   UI 중심, 게임 로직 없음
+텍스트 RPG ✅ →   전투·분기·저장·성장
+                  모든 레이어 활용 가능`,
+    script: `왜 텍스트 RPG를 선택했는지 설명드리겠습니다.
+처음에는 습관 트래커와 플래시카드 앱도 후보였습니다.
+그런데 습관 트래커는 CRUD 위주라 기술적 도전이 없고,
+플래시카드는 UI 중심이라 게임 로직이 없었습니다.
+텍스트 RPG는 전투, 분기, 저장, 성장 등
+아키텍처의 모든 레이어를 활용할 수 있어 선택했습니다.`
+  },
+  {
+    title: '핵심 시스템',
+    body: `시스템         구현 내용
+────────────────────────────────────────
+캐릭터 스탯   HP · MP · STR · DEF · AGI · LV · XP
+턴제 전투     공격·스킬·아이템·도망, 상태이상 3종
+스토리 분기   스탯·아이템·플래그 조건부 선택지
+인벤토리·장비 20슬롯, 무기·방어구 슬롯
+다중 엔딩     5종 이상, 선택 이력과 스탯 반영`,
+    script: `핵심 시스템은 다섯 가지입니다.
+첫째, HP, MP, STR, DEF 등의 캐릭터 스탯 시스템입니다.
+둘째, 공격, 스킬, 아이템, 도망을 선택하는 턴제 전투입니다. 독, 스턴, 화상 같은 상태이상도 있습니다.
+셋째, 스탯과 아이템 조건에 따라 달라지는 스토리 분기입니다.
+넷째, 20슬롯 인벤토리와 무기·방어구 장비 시스템입니다.
+다섯째, 선택 이력과 스탯에 따라 5종 이상의 다중 엔딩이 있습니다.`
+  },
+  {
+    title: '아키텍처 — 4레이어',
+    body: `Presentation  →  화면 7개 (Flutter 위젯)
+Application   →  Riverpod Notifier 3개
+Domain        →  CombatService · StoryEngine
+                  ProgressionService (순수 Dart)
+Data          →  SaveRepository (Hive)
+                  StoryRepository
+
+▶ 화면은 Notifier만 바라본다.
+▶ Domain은 Flutter를 모른다 → 단위 테스트 가능.`,
+    script: `아키텍처는 4레이어로 설계했습니다.
+가장 위에 화면 7개로 구성된 Presentation 레이어,
+그 아래 Riverpod Notifier 3개로 이루어진 Application 레이어,
+그 아래 순수 Dart로 작성된 Domain 레이어,
+맨 아래 Hive 기반 Data 레이어입니다.
+중요한 점은, Domain 레이어는 Flutter를 전혀 모릅니다.
+그래서 단위 테스트가 쉽게 가능합니다.`
+  },
+  {
+    title: '기술 선택 근거 (ADR)',
+    body: `기술        선택 이유
+──────────────────────────────────────────
+Flutter     단일 코드베이스 Android·iOS 동시 지원
+            Hot Reload로 빠른 개발
+Riverpod    BuildContext 불필요
+            여러 화면 상태 공유, 테스트 용이
+Hive        복잡한 게임 데이터 직렬화
+            인메모리 수준 속도, 순수 Dart`,
+    script: `기술 선택 근거는 ADR 문서로 정리했습니다.
+Flutter는 단일 코드베이스로 Android와 iOS를 동시 지원하고, Hot Reload로 개발이 빠릅니다.
+Riverpod은 BuildContext 없이 여러 화면이 상태를 공유할 수 있고, 테스트가 용이합니다.
+Hive는 복잡한 게임 데이터를 인메모리 수준의 속도로 저장할 수 있어 선택했습니다.`
+  },
+  {
+    title: '현재까지 완료한 것',
+    body: `✅ 비전 · 요구사항 · WBS · 일정 문서
+✅ 4레이어 아키텍처 설계 + Mermaid 다이어그램
+✅ ADR 3개 (Flutter · Riverpod · Hive)
+✅ docs/setup.md · docs/architecture.md
+✅ Flutter 앱 코드 구현
+   • 캐릭터 스탯 (M1)
+   • 스토리 + 선택지 (M2)
+   • 턴제 전투 (M3)
+   • 인벤토리 (M4)
+   • 다중 엔딩 (M5)
+
+전체 진척: Must 기능 100% 구현`,
+    script: `오늘 세션까지 완료한 것을 말씀드리겠습니다.
+기획 문서 전체인 비전, 요구사항, WBS, 일정을 완성했습니다.
+4레이어 아키텍처 설계와 Mermaid 다이어그램도 작성했습니다.
+ADR 3개, setup 문서도 완비했습니다.
+Flutter 앱 코드도 이번 세션에 구현했습니다.
+캐릭터 스탯, 스토리 선택지, 턴제 전투, 인벤토리, 다중 엔딩까지 Must 기능 5개를 모두 완료했습니다.
+목표였던 50% 달성을 넘어 100% 구현했습니다.`
+  },
+  {
+    title: '다음 주 목표',
+    body: `14주차
+  • Hive 저장·불러오기 (Should S01)
+  • 단위 테스트 작성 시작
+  • 전투 밸런스 튜닝
+
+15주차
+  • APK 빌드 및 배포
+  • README · 문서 완성
+  • 최종 발표 슬라이드 준비
+
+16주차 — 최종 발표`,
+    script: `다음 주 계획입니다.
+14주차에는 Hive 저장과 불러오기 기능을 구현하고, 단위 테스트 작성을 시작합니다. 전투 밸런스 튜닝도 진행합니다.
+15주차에는 APK 빌드와 배포, 문서 완성, 최종 발표 슬라이드 준비를 합니다.
+그리고 16주차에 최종 발표를 진행할 예정입니다.`
+  },
+  {
+    title: 'Q&A',
+    body: `"AI가 그렇게 했어요"는 답이 되지 않습니다.
+모든 설계 결정에 이유를 말할 수 있습니다.
+
+단골 질문 대비:
+  • 왜 Flutter? → ADR-0001 (크로스플랫폼)
+  • 왜 Riverpod? → ADR-0002 (상태 공유)
+  • AI가 어디까지? → 코드 생성, 본인이 검토·수정
+  • 직접 짠 부분? → 스토리 분기 설계, 밸런스 조정
+
+감사합니다 🙏`,
+    script: `이상으로 발표를 마치겠습니다.
+질문 있으시면 말씀해 주세요.
+왜 Flutter인지는 ADR 0001에서 크로스플랫폼 이유로 설명드릴 수 있습니다.
+Riverpod은 ADR 0002에서 여러 화면 상태 공유 이유를 정리했습니다.
+AI 활용 범위는 솔직하게 말씀드리면, 코드 생성은 AI가 했고, 스토리 분기 설계와 밸런스 조정은 제가 직접 했습니다.
+감사합니다.`
+  }
+];
+
+// ──────────────────────────────────────────────
+// 상태
+// ──────────────────────────────────────────────
+let currentIdx = 0;
+let isPlaying = false;
+let timerInterval = null;
+let elapsedSec = 0;
+const MAX_SEC = 7 * 60;
+
+const synth = window.speechSynthesis;
+let utterance = null;
+
+// ──────────────────────────────────────────────
+// DOM
+// ──────────────────────────────────────────────
+const elTitle = document.getElementById('slide-title');
+const elBody = document.getElementById('slide-body');
+const elScript = document.getElementById('script-text');
+const elCounter = document.getElementById('slide-counter');
+const elTimer = document.getElementById('timer');
+const elProgress = document.getElementById('progress-bar');
+const btnPlay = document.getElementById('btn-play');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const btnStop = document.getElementById('btn-stop');
+const btnReplay = document.getElementById('btn-replay');
+const speedRange = document.getElementById('speed-range');
+const speedVal = document.getElementById('speed-val');
+
+// ──────────────────────────────────────────────
+// 타이머
+// ──────────────────────────────────────────────
+function startTimer() {
+  if (timerInterval) return;
+  timerInterval = setInterval(() => {
+    elapsedSec++;
+    updateTimerDisplay();
+    if (elapsedSec >= MAX_SEC) elTimer.classList.add('warn');
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(elapsedSec / 60);
+  const s = elapsedSec % 60;
+  elTimer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  const pct = Math.min((elapsedSec / MAX_SEC) * 100, 100);
+  elProgress.style.width = pct + '%';
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+// ──────────────────────────────────────────────
+// 슬라이드 렌더링
+// ──────────────────────────────────────────────
+function renderSlide() {
+  const s = slides[currentIdx];
+  elTitle.textContent = s.title;
+  elBody.textContent = s.body;
+  elScript.textContent = s.script;
+  elCounter.textContent = `${currentIdx + 1} / ${slides.length}`;
+  btnPrev.disabled = currentIdx === 0;
+  btnNext.disabled = currentIdx === slides.length - 1;
+}
+
+// ──────────────────────────────────────────────
+// TTS
+// ──────────────────────────────────────────────
+function speak(text, onEnd) {
+  synth.cancel();
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ko-KR';
+  utterance.rate = parseFloat(speedRange.value);
+  utterance.pitch = 1;
+
+  // 읽는 위치 표시
+  utterance.onboundary = (e) => {
+    if (e.name !== 'word') return;
+    const spoken = text.substring(0, e.charIndex + e.charLength);
+    const rest = text.substring(e.charIndex + e.charLength);
+    elScript.innerHTML =
+      `<span class="spoken">${escHtml(spoken)}</span>${escHtml(rest)}`;
+  };
+
+  utterance.onend = () => {
+    isPlaying = false;
+    btnPlay.textContent = '▶ 재생';
+    elScript.textContent = slides[currentIdx].script;
+    if (onEnd) onEnd();
+  };
+
+  utterance.onerror = () => {
+    isPlaying = false;
+    btnPlay.textContent = '▶ 재생';
+  };
+
+  synth.speak(utterance);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function playCurrentSlide() {
+  isPlaying = true;
+  btnPlay.textContent = '⏸ 일시정지';
+  startTimer();
+  speak(slides[currentIdx].script);
+}
+
+function togglePlay() {
+  if (synth.speaking && !synth.paused) {
+    synth.pause();
+    isPlaying = false;
+    btnPlay.textContent = '▶ 재생';
+    stopTimer();
+  } else if (synth.paused) {
+    synth.resume();
+    isPlaying = true;
+    btnPlay.textContent = '⏸ 일시정지';
+    startTimer();
+  } else {
+    playCurrentSlide();
+  }
+}
+
+function stopAll() {
+  synth.cancel();
+  isPlaying = false;
+  btnPlay.textContent = '▶ 재생';
+  stopTimer();
+  renderSlide();
+}
+
+function prevSlide() {
+  if (currentIdx > 0) {
+    synth.cancel();
+    isPlaying = false;
+    btnPlay.textContent = '▶ 재생';
+    currentIdx--;
+    renderSlide();
+  }
+}
+
+function nextSlide() {
+  if (currentIdx < slides.length - 1) {
+    synth.cancel();
+    isPlaying = false;
+    btnPlay.textContent = '▶ 재생';
+    currentIdx++;
+    renderSlide();
+  }
+}
+
+// ──────────────────────────────────────────────
+// 이벤트
+// ──────────────────────────────────────────────
+btnPlay.addEventListener('click', togglePlay);
+btnStop.addEventListener('click', stopAll);
+btnPrev.addEventListener('click', prevSlide);
+btnNext.addEventListener('click', nextSlide);
+btnReplay.addEventListener('click', () => { synth.cancel(); playCurrentSlide(); });
+
+speedRange.addEventListener('input', () => {
+  speedVal.textContent = speedRange.value;
+  if (utterance) utterance.rate = parseFloat(speedRange.value);
+});
+
+document.addEventListener('keydown', (e) => {
+  switch(e.code) {
+    case 'Space': e.preventDefault(); togglePlay(); break;
+    case 'ArrowLeft': prevSlide(); break;
+    case 'ArrowRight': nextSlide(); break;
+    case 'KeyR': synth.cancel(); playCurrentSlide(); break;
+  }
+});
+
+// 초기화
+renderSlide();
+</script>
+</body>
+</html>
