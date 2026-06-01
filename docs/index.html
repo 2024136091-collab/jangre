@@ -3,233 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JANGRE — 텍스트 RPG 중간발표</title>
+<title>JANGRE 중간발표</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
-  :root {
-    --bg: #0f0e17;
-    --surface: #1a1a2e;
-    --card: #16213e;
-    --border: #0f3460;
-    --accent: #e94560;
-    --accent2: #e2c27d;
-    --accent3: #4ecca3;
-    --text: #eaeaea;
-    --muted: #8888aa;
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+body { background:#0f0e17; color:#eaeaea; font-family:'Segoe UI',sans-serif; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    overflow-x: hidden;
-  }
+.slide {
+  height:100vh;
+  scroll-snap-align:start;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:60px;
+  border-bottom:1px solid #1a1a2e;
+}
 
-  #progress {
-    position: fixed; top: 0; left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.3s;
-    z-index: 100;
-  }
-  .slide-num {
-    position: fixed; bottom: 20px; right: 24px;
-    font-size: 11px; color: var(--muted); letter-spacing: 2px; z-index: 100;
-  }
-  .nav-hint {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    font-size: 11px; color: var(--muted); z-index: 100;
-  }
+/* ── 슬라이드 1 타이틀 ── */
+#s1 { text-align:center; background:radial-gradient(ellipse at center, #1a0a1a 0%, #0f0e17 70%); }
+.title { font-size:80px; font-weight:900; letter-spacing:-4px;
+  background:linear-gradient(135deg,#e94560,#e2c27d,#4ecca3);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.subtitle { font-size:18px; color:#888; margin:12px 0 48px; letter-spacing:2px; }
+.info { display:flex; gap:40px; color:#ccc; font-size:14px; }
+.info span { color:#888; font-size:11px; display:block; margin-bottom:4px; letter-spacing:1px; }
 
-  .slide {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    padding: 40px 64px;
-    scroll-snap-align: start;
-    position: relative; overflow: hidden;
-  }
-  .slide::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 15% 50%, rgba(233,69,96,0.05) 0%, transparent 55%),
-                radial-gradient(ellipse at 85% 50%, rgba(78,204,163,0.04) 0%, transparent 55%);
-    pointer-events: none;
-  }
+/* ── 슬라이드 2 문제/비전 ── */
+#s2 { background:#0f0e17; }
+.s-wrap { width:100%; max-width:900px; }
+.s-label { font-size:11px; letter-spacing:3px; color:#e94560; text-transform:uppercase; margin-bottom:16px; }
+.s-title { font-size:40px; font-weight:800; margin-bottom:32px; line-height:1.2; }
+.cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px; }
+.card { background:#1a1a2e; border:1px solid #0f3460; border-radius:12px; padding:20px; }
+.card .ci { font-size:28px; margin-bottom:8px; }
+.card h3 { font-size:13px; color:#e94560; font-weight:700; letter-spacing:1px; margin-bottom:6px; }
+.card p  { font-size:13px; color:#888; line-height:1.6; }
+.vision { background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(78,204,163,.06));
+  border:1px solid rgba(233,69,96,.3); border-radius:12px;
+  padding:22px 28px; display:flex; align-items:center; gap:16px; }
+.vision .vi { font-size:40px; }
+.vision h3 { font-size:10px; color:#e94560; letter-spacing:3px; margin-bottom:6px; }
+.vision p  { font-size:16px; font-weight:600; line-height:1.5; }
+.vision strong { color:#4ecca3; }
 
-  .tag {
-    display: inline-block;
-    padding: 4px 14px; border-radius: 20px;
-    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    border: 1px solid; margin-bottom: 18px;
-  }
-  .tag-red   { color: var(--accent);  border-color: var(--accent);  background: rgba(233,69,96,0.08); }
-  .tag-gold  { color: var(--accent2); border-color: var(--accent2); background: rgba(226,194,125,0.08); }
-  .tag-teal  { color: var(--accent3); border-color: var(--accent3); background: rgba(78,204,163,0.08); }
+/* ── 슬라이드 3 WBS ── */
+#s3 { background:#0a0a14; }
+table { width:100%; border-collapse:separate; border-spacing:0 6px; max-width:900px; }
+th { font-size:10px; color:#555; letter-spacing:2px; padding:0 16px 10px; text-align:left; }
+tr.r { background:#1a1a2e; border-radius:8px; }
+tr.r td { padding:14px 16px; font-size:13px; }
+tr.r td:first-child { border-radius:8px 0 0 8px; }
+tr.r td:last-child  { border-radius:0 8px 8px 0; }
+.wb { background:rgba(233,69,96,.15); color:#e94560; border:1px solid rgba(233,69,96,.3);
+  border-radius:6px; padding:3px 10px; font-size:11px; font-weight:700; }
+.ph { font-weight:700; }
+.ta { color:#666; font-size:12px; }
+.done { color:#4ecca3; } .wip { color:#e2c27d; } .plan { color:#444; }
 
-  /* ── SLIDE 1: 타이틀 ── */
-  #s1 { text-align: center; }
-  .main-title {
-    font-size: clamp(52px, 9vw, 96px);
-    font-weight: 900; letter-spacing: -3px; line-height: 1;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    margin-bottom: 12px;
-  }
-  .main-sub {
-    font-size: clamp(13px, 1.8vw, 17px); color: var(--muted); letter-spacing: 1px; margin-bottom: 44px;
-  }
-  .meta-row {
-    display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; align-items: center;
-  }
-  .meta-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .meta-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-  .meta-value { font-size: 13px; font-weight: 700; color: var(--text); }
-  .vdiv { width: 1px; height: 36px; background: var(--border); }
+/* ── 슬라이드 4 아키텍처 ── */
+#s4 { background:#0f0e17; }
+.mbox { background:#1a1a2e; border:1px solid #0f3460; border-radius:16px;
+  padding:32px; margin-top:20px; max-width:860px; width:100%; }
+.mbox svg { max-width:100%; }
+.chips { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+.chip { background:#1a1a2e; border:1px solid #0f3460; border-radius:8px;
+  padding:8px 16px; font-size:12px; font-weight:600; }
+.chip small { color:#555; margin-left:6px; }
 
-  /* ── SLIDE 2: 문제 & 비전 ── */
-  #s2 .content { max-width: 860px; width: 100%; }
-  .section-title {
-    font-size: clamp(26px, 4vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 32px;
-  }
-  .pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-  .pcard {
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px;
-    position: relative; overflow: hidden;
-  }
-  .pcard::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-  }
-  .pcard .icon { font-size: 24px; margin-bottom: 10px; }
-  .pcard h3 { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-  .pcard p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
-  .vision-box {
-    background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(78,204,163,0.05));
-    border: 1px solid rgba(233,69,96,0.25); border-radius: 14px;
-    padding: 24px 28px; display: flex; align-items: center; gap: 18px;
-  }
-  .vicon { font-size: 36px; flex-shrink: 0; }
-  .vtext h3 { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 7px; }
-  .vtext p  { font-size: clamp(14px, 1.8vw, 17px); font-weight: 600; line-height: 1.5; }
-  .vtext strong { color: var(--accent3); }
-
-  /* ── SLIDE 3: WBS ── */
-  #s3 .content { max-width: 980px; width: 100%; }
-  .wtable { width: 100%; border-collapse: separate; border-spacing: 0 5px; margin-top: 4px; }
-  .wtable th {
-    font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
-    padding: 0 14px 10px; text-align: left; border-bottom: 1px solid var(--border);
-  }
-  .wrow { background: var(--card); border-radius: 8px; transition: background .2s; }
-  .wrow:hover { background: #1e1e38; }
-  .wrow td { padding: 13px 14px; font-size: 13px; vertical-align: middle; }
-  .wrow td:first-child { border-radius: 8px 0 0 8px; }
-  .wrow td:last-child  { border-radius: 0 8px 8px 0; }
-  .wbadge {
-    display: inline-block; background: rgba(233,69,96,0.12); color: var(--accent);
-    border: 1px solid rgba(233,69,96,0.3); border-radius: 6px;
-    padding: 3px 10px; font-size: 10px; font-weight: 700; white-space: nowrap;
-  }
-  .phase { font-weight: 700; }
-  .tasks { color: var(--muted); font-size: 12px; }
-  .sdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
-  .done    { background: #4ecca3; }
-  .wip     { background: #e2c27d; }
-  .planned { background: #333355; }
-  .slabel  { font-size: 11px; font-weight: 600; }
-
-  /* ── SLIDE 4: 아키텍처 ── */
-  #s4 .content { max-width: 860px; width: 100%; text-align: center; }
-  .mwrap {
-    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-    padding: 28px; margin-top: 20px;
-  }
-  .mwrap svg { max-width: 100%; }
-  .tech-row {
-    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px;
-  }
-  .tech-chip {
-    background: rgba(15,52,96,0.6); border: 1px solid var(--border); border-radius: 8px;
-    padding: 8px 18px; font-size: 12px; font-weight: 600;
-  }
-  .tech-chip span { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 11px; }
-
-  @media (max-width: 640px) {
-    .slide { padding: 24px 20px; }
-    .pgrid { grid-template-columns: 1fr; }
-    .meta-row { gap: 14px; }
-    .vdiv { display: none; }
-  }
+/* 네비 힌트 */
+.hint { position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+  font-size:11px; color:#333; letter-spacing:1px; }
 </style>
 </head>
 <body>
 
-<div id="progress"></div>
-<div class="slide-num" id="snum">01 / 04</div>
-<div class="nav-hint">↓ 스크롤 · 화살표 키</div>
-
-<!-- ══ SLIDE 1: 타이틀 ══ -->
+<!-- ══ 슬라이드 1 ══ -->
 <section class="slide" id="s1">
-  <div class="tag tag-red">앱프로그래밍응용 · 중간발표 · 10주차</div>
-  <div class="main-title">JANGRE</div>
-  <div class="main-sub">선택이 세계를 바꾸는 모바일 텍스트 RPG</div>
-  <div class="meta-row">
-    <div class="meta-item">
-      <span class="meta-label">Developer</span>
-      <span class="meta-value">Jaeho · 2024136091</span>
-    </div>
-    <div class="vdiv"></div>
-    <div class="meta-item">
-      <span class="meta-label">Platform</span>
-      <span class="meta-value">Flutter (Android · iOS)</span>
-    </div>
-    <div class="vdiv"></div>
-    <div class="meta-item">
-      <span class="meta-label">Progress</span>
-      <span class="meta-value" style="color:var(--accent3)">Must 100% 완료</span>
-    </div>
-    <div class="vdiv"></div>
-    <div class="meta-item">
-      <span class="meta-label">Agent</span>
-      <span class="meta-value">Claude Code</span>
-    </div>
+  <div class="title">JANGRE</div>
+  <div class="subtitle">텍스트 RPG · 중간발표 · 10주차</div>
+  <div class="info">
+    <div><span>DEVELOPER</span>Jaeho · 2024136091</div>
+    <div><span>PLATFORM</span>Flutter (Android · iOS)</div>
+    <div><span>PROGRESS</span><b style="color:#4ecca3">Must 100% 완료</b></div>
+    <div><span>TOOL</span>Claude Code</div>
   </div>
 </section>
 
-<!-- ══ SLIDE 2: 문제 & 비전 ══ -->
+<!-- ══ 슬라이드 2 ══ -->
 <section class="slide" id="s2">
-  <div class="content">
-    <div class="tag tag-red">Problem &amp; Vision</div>
-    <div class="section-title">모바일 RPG의<br><span style="color:var(--accent)">과금·광고 문제</span></div>
-    <div class="pgrid">
-      <div class="pcard">
-        <div class="icon">💸</div>
-        <h3>과금·광고 중심</h3>
-        <p>기존 모바일 RPG는 과금과 광고가 중심이라 순수하게 스토리에 집중하기 어렵습니다.</p>
-      </div>
-      <div class="pcard">
-        <div class="icon">⏱️</div>
-        <h3>완결 없는 게임</h3>
-        <p>끝이 없는 콘텐츠 구조로 짧은 이동 시간에 한 판을 완결하기 불가능합니다.</p>
-      </div>
-      <div class="pcard">
-        <div class="icon">🎭</div>
-        <h3>선택의 의미 없음</h3>
-        <p>선택지가 있어도 결과가 같아서 내 결정이 실제로 세계를 바꾼다는 느낌이 없습니다.</p>
-      </div>
-      <div class="pcard">
-        <div class="icon">📵</div>
-        <h3>오프라인 불가</h3>
-        <p>대부분 상시 인터넷 연결이 필요해 지하철·비행기에서 플레이할 수 없습니다.</p>
-      </div>
+  <div class="s-wrap">
+    <div class="s-label">Problem &amp; Vision</div>
+    <div class="s-title">모바일 RPG의<br><span style="color:#e94560">과금·광고 문제</span></div>
+    <div class="cards">
+      <div class="card"><div class="ci">💸</div><h3>과금·광고 중심</h3><p>순수하게 스토리에 집중하기 어렵습니다.</p></div>
+      <div class="card"><div class="ci">⏱️</div><h3>완결 없는 게임</h3><p>짧은 이동 시간에 한 판을 끝낼 수 없습니다.</p></div>
+      <div class="card"><div class="ci">🎭</div><h3>선택의 의미 없음</h3><p>선택해도 결과가 같아서 몰입이 안 됩니다.</p></div>
+      <div class="card"><div class="ci">📵</div><h3>오프라인 불가</h3><p>상시 인터넷 연결이 필요합니다.</p></div>
     </div>
-    <div class="vision-box">
-      <div class="vicon">⚔️</div>
-      <div class="vtext">
-        <h3>Vision</h3>
+    <div class="vision">
+      <div class="vi">⚔️</div>
+      <div>
+        <h3>VISION</h3>
         <p>선택이 캐릭터를 성장시키고 세계를 바꾸는 <strong>모바일 텍스트 RPG</strong><br>
         5~10분 완결 · 엔딩 5종 · 오프라인 완전 지원</p>
       </div>
@@ -237,127 +113,65 @@
   </div>
 </section>
 
-<!-- ══ SLIDE 3: WBS ══ -->
+<!-- ══ 슬라이드 3 ══ -->
 <section class="slide" id="s3">
-  <div class="content">
-    <div class="tag tag-gold">Work Breakdown Structure</div>
-    <div class="section-title">7주 개발 일정</div>
-    <table class="wtable">
-      <thead>
-        <tr>
-          <th>주차</th><th>Phase</th><th>주요 산출물</th><th>상태</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="wrow">
-          <td><span class="wbadge">9W</span></td>
-          <td><span class="phase">기획</span></td>
-          <td class="tasks">비전 · 요구사항(MoSCoW) · 주제 선정 (텍스트 RPG)</td>
-          <td><span class="sdot done"></span><span class="slabel" style="color:#4ecca3">완료</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">10W</span></td>
-          <td><span class="phase">설계 · 발표</span></td>
-          <td class="tasks">WBS · 4레이어 아키텍처 · ADR 3개 · GitHub Pages</td>
-          <td><span class="sdot wip"></span><span class="slabel" style="color:#e2c27d">진행중</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">11W</span></td>
-          <td><span class="phase">Must 구현</span></td>
-          <td class="tasks">캐릭터 스탯 · 스토리 분기 · 턴제 전투 · 인벤토리 · 다중 엔딩 3종</td>
-          <td><span class="sdot done"></span><span class="slabel" style="color:#4ecca3">완료 ✨</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">12W</span></td>
-          <td><span class="phase">Should 구현</span></td>
-          <td class="tasks">Hive 저장·불러오기 (슬롯 3개) · 단위 테스트</td>
-          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">13W</span></td>
-          <td><span class="phase">품질</span></td>
-          <td class="tasks">전투 밸런스 튜닝 · Could 기능 · 버그 수정</td>
-          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">14W</span></td>
-          <td><span class="phase">배포 준비</span></td>
-          <td class="tasks">APK 릴리즈 빌드 · GitHub Releases · README 완성</td>
-          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
-        </tr>
-        <tr class="wrow">
-          <td><span class="wbadge">15W</span></td>
-          <td><span class="phase">최종 발표</span></td>
-          <td class="tasks">실기기 데모 · 최종 발표 · 리포지토리 정리</td>
-          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <div class="s-label" style="max-width:900px;width:100%">WBS · 7주 개발 일정</div>
+  <table>
+    <thead><tr><th>주차</th><th>Phase</th><th>주요 산출물</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr class="r"><td><span class="wb">9W</span></td><td class="ph">기획</td><td class="ta">비전 · 요구사항(MoSCoW) · 주제 선정</td><td class="done">✔ 완료</td></tr>
+      <tr class="r"><td><span class="wb">10W</span></td><td class="ph">설계·발표</td><td class="ta">WBS · 아키텍처 · ADR 3개 · GitHub Pages</td><td class="wip">▶ 진행중</td></tr>
+      <tr class="r"><td><span class="wb">11W</span></td><td class="ph">Must 구현</td><td class="ta">캐릭터 스탯 · 스토리 분기 · 전투 · 인벤토리 · 엔딩 3종</td><td class="done">✔ 완료 ✨</td></tr>
+      <tr class="r"><td><span class="wb">12W</span></td><td class="ph">Should 구현</td><td class="ta">Hive 저장·불러오기 · 단위 테스트</td><td class="plan">○ 예정</td></tr>
+      <tr class="r"><td><span class="wb">13W</span></td><td class="ph">품질</td><td class="ta">밸런스 튜닝 · 버그 수정</td><td class="plan">○ 예정</td></tr>
+      <tr class="r"><td><span class="wb">14W</span></td><td class="ph">배포</td><td class="ta">APK 릴리즈 · GitHub Releases</td><td class="plan">○ 예정</td></tr>
+      <tr class="r"><td><span class="wb">15W</span></td><td class="ph">최종 발표</td><td class="ta">실기기 데모 · 최종 발표</td><td class="plan">○ 예정</td></tr>
+    </tbody>
+  </table>
 </section>
 
-<!-- ══ SLIDE 4: 아키텍처 ══ -->
+<!-- ══ 슬라이드 4 ══ -->
 <section class="slide" id="s4">
-  <div class="content">
-    <div class="tag tag-teal">Architecture</div>
-    <div class="section-title">4레이어 아키텍처</div>
-    <div class="mwrap">
+  <div style="max-width:860px;width:100%;text-align:center">
+    <div class="s-label">Architecture · Mermaid</div>
+    <div class="s-title" style="font-size:32px">4레이어 아키텍처</div>
+    <div class="mbox">
       <div class="mermaid">
-%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#16213e','primaryTextColor':'#eaeaea','primaryBorderColor':'#0f3460','lineColor':'#e94560','secondaryColor':'#0f3460','background':'#1a1a2e','mainBkg':'#16213e','nodeBorder':'#0f3460','titleColor':'#eaeaea'}}}%%
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#16213e','primaryTextColor':'#eaeaea','primaryBorderColor':'#0f3460','lineColor':'#e94560','background':'#1a1a2e','mainBkg':'#16213e'}}}%%
 graph TD
-    UI["🖥️ Presentation\n화면 7개 — Flutter 위젯\n타이틀·캐릭터·스토리·전투·인벤토리·결과·저장"]
-    APP["⚙️ Application\nRiverpod Notifier 3개\nGameNotifier · CombatNotifier · StoryNotifier"]
-    DOMAIN["🧠 Domain — 순수 Dart\nCombatService · StoryEngine · ProgressionService\n단위 테스트 가능 — Flutter 의존 없음"]
-    DATA["💾 Data\nSaveRepository (Hive) · StoryRepository\n오프라인 슬롯 3개 · 게임 데이터 직렬화"]
+  UI["🖥️ Presentation\n화면 7개 — Flutter 위젯"]
+  APP["⚙️ Application\nRiverpod Notifier 3개"]
+  DOMAIN["🧠 Domain — 순수 Dart\nCombatService · StoryEngine"]
+  DATA["💾 Data\nHive 오프라인 저장 (슬롯 3개)"]
 
-    UI -->|"상태 구독"| APP
-    APP -->|"비즈니스 로직 호출"| DOMAIN
-    DOMAIN -->|"저장·불러오기"| DATA
+  UI -->|"상태 구독"| APP
+  APP -->|"로직 호출"| DOMAIN
+  DOMAIN -->|"저장·불러오기"| DATA
 
-    style UI     fill:#1e1b2e,stroke:#e94560,color:#eaeaea
-    style APP    fill:#1a1a30,stroke:#e2c27d,color:#eaeaea
-    style DOMAIN fill:#0f1e1a,stroke:#4ecca3,color:#eaeaea
-    style DATA   fill:#0f1525,stroke:#4ecca3,color:#eaeaea
+  style UI     fill:#1e1b2e,stroke:#e94560,color:#eaeaea
+  style APP    fill:#1a1a30,stroke:#e2c27d,color:#eaeaea
+  style DOMAIN fill:#0f1e1a,stroke:#4ecca3,color:#eaeaea
+  style DATA   fill:#0f1525,stroke:#4ecca3,color:#eaeaea
       </div>
     </div>
-    <div class="tech-row">
-      <div class="tech-chip">Flutter<span>크로스플랫폼 · Hot Reload</span></div>
-      <div class="tech-chip">Riverpod<span>상태 관리 · 테스트 용이</span></div>
-      <div class="tech-chip">Hive<span>오프라인 저장 · 고속 직렬화</span></div>
-      <div class="tech-chip">Claude Code<span>AI Agent 보조 개발</span></div>
+    <div class="chips">
+      <div class="chip">Flutter <small>크로스플랫폼</small></div>
+      <div class="chip">Riverpod <small>상태 관리</small></div>
+      <div class="chip">Hive <small>오프라인 저장</small></div>
     </div>
   </div>
 </section>
 
+<div class="hint">↓ 스크롤 또는 화살표 키</div>
+
 <script>
-  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
-
-  const slides = document.querySelectorAll('.slide');
-  const prog = document.getElementById('progress');
-  const snum = document.getElementById('snum');
-  const total = slides.length;
-
-  function update() {
-    const docH = document.documentElement.scrollHeight - window.innerHeight;
-    prog.style.width = (docH > 0 ? window.scrollY / docH * 100 : 0) + '%';
-    let cur = 1;
-    slides.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight / 2) cur = i + 1; });
-    snum.textContent = String(cur).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
-  }
-
-  window.addEventListener('scroll', update, { passive: true });
-
-  document.addEventListener('keydown', e => {
-    const cur = Math.round(window.scrollY / window.innerHeight);
-    if (['ArrowDown','ArrowRight',' '].includes(e.key)) {
-      e.preventDefault();
-      if (cur < total - 1) window.scrollTo({ top: (cur+1)*window.innerHeight, behavior:'smooth' });
-    }
-    if (['ArrowUp','ArrowLeft'].includes(e.key)) {
-      e.preventDefault();
-      if (cur > 0) window.scrollTo({ top: (cur-1)*window.innerHeight, behavior:'smooth' });
-    }
-  });
+mermaid.initialize({startOnLoad:true, theme:'dark'});
+document.addEventListener('keydown', e => {
+  const cur = Math.round(window.scrollY / window.innerHeight);
+  const total = document.querySelectorAll('.slide').length;
+  if (['ArrowDown',' '].includes(e.key)) { e.preventDefault(); if(cur<total-1) window.scrollTo({top:(cur+1)*window.innerHeight,behavior:'smooth'}); }
+  if (e.key==='ArrowUp') { e.preventDefault(); if(cur>0) window.scrollTo({top:(cur-1)*window.innerHeight,behavior:'smooth'}); }
+});
 </script>
 </body>
 </html>
