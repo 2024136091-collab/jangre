@@ -3,569 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JANGRE — AI Agent 기반 모바일 앱 개발</title>
+<title>JANGRE — 텍스트 RPG 중간발표</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --border: #2a2a3a;
-    --accent: #7c6fe0;
-    --accent2: #e06f9f;
-    --accent3: #6fe0c8;
-    --text: #e8e8f0;
+    --bg: #0f0e17;
+    --surface: #1a1a2e;
+    --card: #16213e;
+    --border: #0f3460;
+    --accent: #e94560;
+    --accent2: #e2c27d;
+    --accent3: #4ecca3;
+    --text: #eaeaea;
     --muted: #8888aa;
-    --slide-gap: 100vh;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
-
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     overflow-x: hidden;
   }
 
-  /* ── 슬라이드 기본 ── */
-  .slide {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 60px;
-    scroll-snap-align: start;
-    position: relative;
-    overflow: hidden;
+  #progress {
+    position: fixed; top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.3s;
+    z-index: 100;
+  }
+  .slide-num {
+    position: fixed; bottom: 20px; right: 24px;
+    font-size: 11px; color: var(--muted); letter-spacing: 2px; z-index: 100;
+  }
+  .nav-hint {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: var(--muted); z-index: 100;
   }
 
+  .slide {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 40px 64px;
+    scroll-snap-align: start;
+    position: relative; overflow: hidden;
+  }
   .slide::before {
     content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 20% 50%, rgba(124,111,224,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(224,111,159,0.04) 0%, transparent 60%);
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 15% 50%, rgba(233,69,96,0.05) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 50%, rgba(78,204,163,0.04) 0%, transparent 55%);
     pointer-events: none;
   }
 
-  /* ── 진행 바 ── */
-  #progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.3s ease;
-    z-index: 100;
-  }
-
-  /* ── 슬라이드 번호 ── */
-  .slide-num {
-    position: fixed;
-    bottom: 20px; right: 28px;
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    z-index: 100;
-  }
-
-  /* ── 네비게이션 힌트 ── */
-  .nav-hint {
-    position: fixed;
-    bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    z-index: 100;
-  }
-
-  /* ── 태그 ── */
   .tag {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: 1px solid;
-    margin-bottom: 20px;
+    padding: 4px 14px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    border: 1px solid; margin-bottom: 18px;
   }
-  .tag-purple { color: var(--accent); border-color: var(--accent); background: rgba(124,111,224,0.08); }
-  .tag-pink   { color: var(--accent2); border-color: var(--accent2); background: rgba(224,111,159,0.08); }
-  .tag-teal   { color: var(--accent3); border-color: var(--accent3); background: rgba(111,224,200,0.08); }
+  .tag-red   { color: var(--accent);  border-color: var(--accent);  background: rgba(233,69,96,0.08); }
+  .tag-gold  { color: var(--accent2); border-color: var(--accent2); background: rgba(226,194,125,0.08); }
+  .tag-teal  { color: var(--accent3); border-color: var(--accent3); background: rgba(78,204,163,0.08); }
 
-  /* ── 슬라이드 1: 타이틀 ── */
+  /* ── SLIDE 1: 타이틀 ── */
   #s1 { text-align: center; }
-
   .main-title {
-    font-size: clamp(48px, 8vw, 88px);
-    font-weight: 900;
-    letter-spacing: -3px;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 16px;
-  }
-
-  .sub-title {
-    font-size: clamp(14px, 2vw, 18px);
-    color: var(--muted);
-    letter-spacing: 1px;
-    margin-bottom: 48px;
-  }
-
-  .meta-row {
-    display: flex;
-    gap: 32px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .meta-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .meta-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .meta-value {
-    font-size: 14px;
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .divider {
-    width: 1px;
-    height: 40px;
-    background: var(--border);
-  }
-
-  /* ── 슬라이드 2: 문제 정의 ── */
-  #s2 .content {
-    max-width: 900px;
-    width: 100%;
-  }
-
-  .section-title {
-    font-size: clamp(28px, 4vw, 42px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 40px;
-  }
-
-  .problem-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 40px;
-  }
-
-  .problem-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .problem-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent2), transparent);
-  }
-
-  .problem-card .icon {
-    font-size: 28px;
+    font-size: clamp(52px, 9vw, 96px);
+    font-weight: 900; letter-spacing: -3px; line-height: 1;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     margin-bottom: 12px;
   }
-
-  .problem-card h3 {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent2);
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .main-sub {
+    font-size: clamp(13px, 1.8vw, 17px); color: var(--muted); letter-spacing: 1px; margin-bottom: 44px;
   }
-
-  .problem-card p {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
+  .meta-row {
+    display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; align-items: center;
   }
+  .meta-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .meta-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .meta-value { font-size: 13px; font-weight: 700; color: var(--text); }
+  .vdiv { width: 1px; height: 36px; background: var(--border); }
 
+  /* ── SLIDE 2: 문제 & 비전 ── */
+  #s2 .content { max-width: 860px; width: 100%; }
+  .section-title {
+    font-size: clamp(26px, 4vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 32px;
+  }
+  .pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .pcard {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+    position: relative; overflow: hidden;
+  }
+  .pcard::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .pcard .icon { font-size: 24px; margin-bottom: 10px; }
+  .pcard h3 { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .pcard p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
   .vision-box {
-    background: linear-gradient(135deg, rgba(124,111,224,0.1), rgba(111,224,200,0.05));
-    border: 1px solid rgba(124,111,224,0.3);
-    border-radius: 16px;
-    padding: 28px 32px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    background: linear-gradient(135deg, rgba(233,69,96,0.08), rgba(78,204,163,0.05));
+    border: 1px solid rgba(233,69,96,0.25); border-radius: 14px;
+    padding: 24px 28px; display: flex; align-items: center; gap: 18px;
   }
+  .vicon { font-size: 36px; flex-shrink: 0; }
+  .vtext h3 { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 7px; }
+  .vtext p  { font-size: clamp(14px, 1.8vw, 17px); font-weight: 600; line-height: 1.5; }
+  .vtext strong { color: var(--accent3); }
 
-  .vision-icon {
-    font-size: 40px;
-    flex-shrink: 0;
+  /* ── SLIDE 3: WBS ── */
+  #s3 .content { max-width: 980px; width: 100%; }
+  .wtable { width: 100%; border-collapse: separate; border-spacing: 0 5px; margin-top: 4px; }
+  .wtable th {
+    font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+    padding: 0 14px 10px; text-align: left; border-bottom: 1px solid var(--border);
   }
-
-  .vision-text h3 {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+  .wrow { background: var(--card); border-radius: 8px; transition: background .2s; }
+  .wrow:hover { background: #1e1e38; }
+  .wrow td { padding: 13px 14px; font-size: 13px; vertical-align: middle; }
+  .wrow td:first-child { border-radius: 8px 0 0 8px; }
+  .wrow td:last-child  { border-radius: 0 8px 8px 0; }
+  .wbadge {
+    display: inline-block; background: rgba(233,69,96,0.12); color: var(--accent);
+    border: 1px solid rgba(233,69,96,0.3); border-radius: 6px;
+    padding: 3px 10px; font-size: 10px; font-weight: 700; white-space: nowrap;
   }
+  .phase { font-weight: 700; }
+  .tasks { color: var(--muted); font-size: 12px; }
+  .sdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+  .done    { background: #4ecca3; }
+  .wip     { background: #e2c27d; }
+  .planned { background: #333355; }
+  .slabel  { font-size: 11px; font-weight: 600; }
 
-  .vision-text p {
-    font-size: clamp(15px, 2vw, 18px);
-    font-weight: 600;
-    line-height: 1.5;
-    color: var(--text);
+  /* ── SLIDE 4: 아키텍처 ── */
+  #s4 .content { max-width: 860px; width: 100%; text-align: center; }
+  .mwrap {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; margin-top: 20px;
   }
-
-  /* ── 슬라이드 3: WBS ── */
-  #s3 .content {
-    max-width: 1000px;
-    width: 100%;
+  .mwrap svg { max-width: 100%; }
+  .tech-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px;
   }
-
-  .wbs-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 6px;
-    margin-top: 8px;
+  .tech-chip {
+    background: rgba(15,52,96,0.6); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 18px; font-size: 12px; font-weight: 600;
   }
+  .tech-chip span { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 11px; }
 
-  .wbs-table th {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 0 16px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .wbs-row {
-    background: var(--surface);
-    border-radius: 8px;
-    transition: background 0.2s;
-  }
-
-  .wbs-row:hover { background: #1a1a28; }
-
-  .wbs-row td {
-    padding: 14px 16px;
-    font-size: 13px;
-    vertical-align: middle;
-  }
-
-  .wbs-row td:first-child { border-radius: 8px 0 0 8px; }
-  .wbs-row td:last-child  { border-radius: 0 8px 8px 0; }
-
-  .week-badge {
-    display: inline-block;
-    background: rgba(124,111,224,0.15);
-    color: var(--accent);
-    border: 1px solid rgba(124,111,224,0.3);
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .phase-name {
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .tasks-list {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .status-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  .done    { background: #6fe0a0; }
-  .wip     { background: #e0c86f; }
-  .planned { background: var(--border); }
-
-  .status-label {
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  /* ── 슬라이드 4: 아키텍처 ── */
-  #s4 .content {
-    max-width: 900px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .mermaid-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    margin-top: 24px;
-  }
-
-  .mermaid svg { max-width: 100%; }
-
-  /* ── 반응형 ── */
   @media (max-width: 640px) {
     .slide { padding: 24px 20px; }
-    .problem-grid { grid-template-columns: 1fr; }
-    .meta-row { gap: 16px; }
-    .divider { display: none; }
+    .pgrid { grid-template-columns: 1fr; }
+    .meta-row { gap: 14px; }
+    .vdiv { display: none; }
   }
 </style>
 </head>
 <body>
 
 <div id="progress"></div>
-<div class="slide-num" id="slideNum">01 / 04</div>
-<div class="nav-hint">↓ 스크롤 또는 화살표 키</div>
+<div class="slide-num" id="snum">01 / 04</div>
+<div class="nav-hint">↓ 스크롤 · 화살표 키</div>
 
-<!-- ══════════════════════════════════
-     SLIDE 1 — 타이틀
-══════════════════════════════════ -->
+<!-- ══ SLIDE 1: 타이틀 ══ -->
 <section class="slide" id="s1">
-  <div class="tag tag-purple">앱프로그래밍응용 · 중간발표</div>
+  <div class="tag tag-red">앱프로그래밍응용 · 중간발표 · 10주차</div>
   <div class="main-title">JANGRE</div>
-  <div class="sub-title">AI Agent 기반 모바일 앱 개발 프로젝트</div>
+  <div class="main-sub">선택이 세계를 바꾸는 모바일 텍스트 RPG</div>
   <div class="meta-row">
     <div class="meta-item">
       <span class="meta-label">Developer</span>
-      <span class="meta-value">Jaeho</span>
+      <span class="meta-value">Jaeho · 2024136091</span>
     </div>
-    <div class="divider"></div>
-    <div class="meta-item">
-      <span class="meta-label">School</span>
-      <span class="meta-value">신구대학교 컴퓨터소프트웨어</span>
-    </div>
-    <div class="divider"></div>
-    <div class="meta-item">
-      <span class="meta-label">Tool</span>
-      <span class="meta-value">Claude Code (Antigravity)</span>
-    </div>
-    <div class="divider"></div>
+    <div class="vdiv"></div>
     <div class="meta-item">
       <span class="meta-label">Platform</span>
-      <span class="meta-value">Flutter · Mobile</span>
+      <span class="meta-value">Flutter (Android · iOS)</span>
+    </div>
+    <div class="vdiv"></div>
+    <div class="meta-item">
+      <span class="meta-label">Progress</span>
+      <span class="meta-value" style="color:var(--accent3)">Must 100% 완료</span>
+    </div>
+    <div class="vdiv"></div>
+    <div class="meta-item">
+      <span class="meta-label">Agent</span>
+      <span class="meta-value">Claude Code</span>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-     SLIDE 2 — 문제 정의 & 비전
-══════════════════════════════════ -->
+<!-- ══ SLIDE 2: 문제 & 비전 ══ -->
 <section class="slide" id="s2">
   <div class="content">
-    <div class="tag tag-pink">Problem & Vision</div>
-    <div class="section-title">개발 전 준비가<br><span style="color:var(--accent2)">너무 오래 걸린다</span></div>
-
-    <div class="problem-grid">
-      <div class="problem-card">
-        <div class="icon">⏳</div>
-        <h3>기획·설계 병목</h3>
-        <p>앱 하나를 시작하려면 비전 정의, 요구사항 분류, WBS 작성까지 며칠이 소요됩니다.</p>
+    <div class="tag tag-red">Problem &amp; Vision</div>
+    <div class="section-title">모바일 RPG의<br><span style="color:var(--accent)">과금·광고 문제</span></div>
+    <div class="pgrid">
+      <div class="pcard">
+        <div class="icon">💸</div>
+        <h3>과금·광고 중심</h3>
+        <p>기존 모바일 RPG는 과금과 광고가 중심이라 순수하게 스토리에 집중하기 어렵습니다.</p>
       </div>
-      <div class="problem-card">
-        <div class="icon">📄</div>
-        <h3>문서화 부재</h3>
-        <p>코드는 짜지만 아키텍처 문서, 설정 가이드, 발표 자료는 별도로 다시 만들어야 합니다.</p>
+      <div class="pcard">
+        <div class="icon">⏱️</div>
+        <h3>완결 없는 게임</h3>
+        <p>끝이 없는 콘텐츠 구조로 짧은 이동 시간에 한 판을 완결하기 불가능합니다.</p>
       </div>
-      <div class="problem-card">
-        <div class="icon">🔁</div>
-        <h3>반복 작업</h3>
-        <p>프로젝트마다 같은 구조를 다시 세팅합니다. 창의적인 작업 시간이 사라집니다.</p>
+      <div class="pcard">
+        <div class="icon">🎭</div>
+        <h3>선택의 의미 없음</h3>
+        <p>선택지가 있어도 결과가 같아서 내 결정이 실제로 세계를 바꾼다는 느낌이 없습니다.</p>
       </div>
-      <div class="problem-card">
-        <div class="icon">🎯</div>
-        <h3>방향 흔들림</h3>
-        <p>기획 없이 코드부터 짜면 기능이 늘어날수록 방향을 잃고 리팩터링이 반복됩니다.</p>
+      <div class="pcard">
+        <div class="icon">📵</div>
+        <h3>오프라인 불가</h3>
+        <p>대부분 상시 인터넷 연결이 필요해 지하철·비행기에서 플레이할 수 없습니다.</p>
       </div>
     </div>
-
     <div class="vision-box">
-      <div class="vision-icon">🚀</div>
-      <div class="vision-text">
+      <div class="vicon">⚔️</div>
+      <div class="vtext">
         <h3>Vision</h3>
-        <p>AI Agent(Claude Code)가 기획 → 설계 → 코드 → 발표까지<br>일괄 자동화하여 <strong style="color:var(--accent3)">개발자는 아이디어에만 집중</strong>한다.</p>
+        <p>선택이 캐릭터를 성장시키고 세계를 바꾸는 <strong>모바일 텍스트 RPG</strong><br>
+        5~10분 완결 · 엔딩 5종 · 오프라인 완전 지원</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-     SLIDE 3 — WBS
-══════════════════════════════════ -->
+<!-- ══ SLIDE 3: WBS ══ -->
 <section class="slide" id="s3">
   <div class="content">
-    <div class="tag tag-teal">Work Breakdown Structure</div>
+    <div class="tag tag-gold">Work Breakdown Structure</div>
     <div class="section-title">7주 개발 일정</div>
-
-    <table class="wbs-table">
+    <table class="wtable">
       <thead>
         <tr>
-          <th>주차</th>
-          <th>Phase</th>
-          <th>주요 산출물</th>
-          <th>상태</th>
+          <th>주차</th><th>Phase</th><th>주요 산출물</th><th>상태</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="wbs-row">
-          <td><span class="week-badge">9W</span></td>
-          <td><span class="phase-name">기획</span></td>
-          <td class="tasks-list">비전 정의 · 요구사항 (MoSCoW) · 주제 선정</td>
-          <td><span class="status-dot done"></span><span class="status-label" style="color:#6fe0a0">완료</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">9W</span></td>
+          <td><span class="phase">기획</span></td>
+          <td class="tasks">비전 · 요구사항(MoSCoW) · 주제 선정 (텍스트 RPG)</td>
+          <td><span class="sdot done"></span><span class="slabel" style="color:#4ecca3">완료</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">10W</span></td>
-          <td><span class="phase-name">설계</span></td>
-          <td class="tasks-list">WBS · 아키텍처 · ADR 작성 · GitHub Pages 발표</td>
-          <td><span class="status-dot wip"></span><span class="status-label" style="color:#e0c86f">진행중</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">10W</span></td>
+          <td><span class="phase">설계 · 발표</span></td>
+          <td class="tasks">WBS · 4레이어 아키텍처 · ADR 3개 · GitHub Pages</td>
+          <td><span class="sdot wip"></span><span class="slabel" style="color:#e2c27d">진행중</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">11W</span></td>
-          <td><span class="phase-name">핵심 구현 1</span></td>
-          <td class="tasks-list">UI 뼈대 · 핵심 기능 A · 로컬 상태 관리</td>
-          <td><span class="status-dot planned"></span><span class="status-label" style="color:var(--muted)">예정</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">11W</span></td>
+          <td><span class="phase">Must 구현</span></td>
+          <td class="tasks">캐릭터 스탯 · 스토리 분기 · 턴제 전투 · 인벤토리 · 다중 엔딩 3종</td>
+          <td><span class="sdot done"></span><span class="slabel" style="color:#4ecca3">완료 ✨</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">12W</span></td>
-          <td><span class="phase-name">핵심 구현 2</span></td>
-          <td class="tasks-list">핵심 기능 B · 데이터 저장 · 단위 테스트</td>
-          <td><span class="status-dot planned"></span><span class="status-label" style="color:var(--muted)">예정</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">12W</span></td>
+          <td><span class="phase">Should 구현</span></td>
+          <td class="tasks">Hive 저장·불러오기 (슬롯 3개) · 단위 테스트</td>
+          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">13W</span></td>
-          <td><span class="phase-name">UI 완성</span></td>
-          <td class="tasks-list">디자인 완성 · 온보딩 플로우 · 반응형 처리</td>
-          <td><span class="status-dot planned"></span><span class="status-label" style="color:var(--muted)">예정</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">13W</span></td>
+          <td><span class="phase">품질</span></td>
+          <td class="tasks">전투 밸런스 튜닝 · Could 기능 · 버그 수정</td>
+          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">14W</span></td>
-          <td><span class="phase-name">테스트 · 최적화</span></td>
-          <td class="tasks-list">통합 테스트 · 퍼포먼스 튜닝 · 버그 수정</td>
-          <td><span class="status-dot planned"></span><span class="status-label" style="color:var(--muted)">예정</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">14W</span></td>
+          <td><span class="phase">배포 준비</span></td>
+          <td class="tasks">APK 릴리즈 빌드 · GitHub Releases · README 완성</td>
+          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
         </tr>
-        <tr class="wbs-row">
-          <td><span class="week-badge">15W</span></td>
-          <td><span class="phase-name">최종 발표</span></td>
-          <td class="tasks-list">데모 앱 · 최종 발표 자료 · 리포지토리 정리</td>
-          <td><span class="status-dot planned"></span><span class="status-label" style="color:var(--muted)">예정</span></td>
+        <tr class="wrow">
+          <td><span class="wbadge">15W</span></td>
+          <td><span class="phase">최종 발표</span></td>
+          <td class="tasks">실기기 데모 · 최종 발표 · 리포지토리 정리</td>
+          <td><span class="sdot planned"></span><span class="slabel" style="color:var(--muted)">예정</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 </section>
 
-<!-- ══════════════════════════════════
-     SLIDE 4 — 아키텍처
-══════════════════════════════════ -->
+<!-- ══ SLIDE 4: 아키텍처 ══ -->
 <section class="slide" id="s4">
   <div class="content">
-    <div class="tag tag-purple">Architecture</div>
-    <div class="section-title">AI Agent 기반 개발 아키텍처</div>
-
-    <div class="mermaid-wrap">
+    <div class="tag tag-teal">Architecture</div>
+    <div class="section-title">4레이어 아키텍처</div>
+    <div class="mwrap">
       <div class="mermaid">
-%%{init: {'theme':'dark','themeVariables':{'primaryColor':'#7c6fe0','primaryTextColor':'#e8e8f0','primaryBorderColor':'#2a2a3a','lineColor':'#8888aa','secondaryColor':'#12121a','tertiaryColor':'#1a1a28','background':'#12121a','mainBkg':'#1a1a28','nodeBorder':'#2a2a3a','clusterBkg':'#12121a','titleColor':'#e8e8f0','edgeLabelBackground':'#12121a'}}}%%
-graph LR
-    DEV(["👤 Jaeho\n개발자"])
-    AGENT(["🤖 Claude Code\nAntigravity Agent"])
-    PLAN(["📋 Planning\n.planning/"])
-    APP(["📱 Flutter App\njangre"])
-    PAGES(["🌐 GitHub Pages\n발표자료 · WBS"])
-    REPO(["☁️ GitHub\n2024136091-collab/jangre"])
+%%{init:{'theme':'dark','themeVariables':{'primaryColor':'#16213e','primaryTextColor':'#eaeaea','primaryBorderColor':'#0f3460','lineColor':'#e94560','secondaryColor':'#0f3460','background':'#1a1a2e','mainBkg':'#16213e','nodeBorder':'#0f3460','titleColor':'#eaeaea'}}}%%
+graph TD
+    UI["🖥️ Presentation\n화면 7개 — Flutter 위젯\n타이틀·캐릭터·스토리·전투·인벤토리·결과·저장"]
+    APP["⚙️ Application\nRiverpod Notifier 3개\nGameNotifier · CombatNotifier · StoryNotifier"]
+    DOMAIN["🧠 Domain — 순수 Dart\nCombatService · StoryEngine · ProgressionService\n단위 테스트 가능 — Flutter 의존 없음"]
+    DATA["💾 Data\nSaveRepository (Hive) · StoryRepository\n오프라인 슬롯 3개 · 게임 데이터 직렬화"]
 
-    DEV -->|"아이디어 · 프롬프트"| AGENT
-    AGENT -->|"문서 자동 생성"| PLAN
-    AGENT -->|"코드 생성 · 리뷰"| APP
-    AGENT -->|"발표 자료 생성"| PAGES
-    PLAN -->|"설계 기반"| APP
-    APP -->|"git push"| REPO
-    PAGES -->|"git push"| REPO
-    REPO -->|"GitHub Actions"| PAGES
+    UI -->|"상태 구독"| APP
+    APP -->|"비즈니스 로직 호출"| DOMAIN
+    DOMAIN -->|"저장·불러오기"| DATA
 
-    style DEV fill:#1a1a28,stroke:#7c6fe0,color:#e8e8f0
-    style AGENT fill:#2a1a3a,stroke:#7c6fe0,color:#e8e8f0
-    style PLAN fill:#1a1a28,stroke:#6fe0c8,color:#e8e8f0
-    style APP fill:#1a1a28,stroke:#6fe0c8,color:#e8e8f0
-    style PAGES fill:#1a2a2a,stroke:#6fe0c8,color:#e8e8f0
-    style REPO fill:#1a1a28,stroke:#e06f9f,color:#e8e8f0
+    style UI     fill:#1e1b2e,stroke:#e94560,color:#eaeaea
+    style APP    fill:#1a1a30,stroke:#e2c27d,color:#eaeaea
+    style DOMAIN fill:#0f1e1a,stroke:#4ecca3,color:#eaeaea
+    style DATA   fill:#0f1525,stroke:#4ecca3,color:#eaeaea
       </div>
     </div>
-
-    <p style="color:var(--muted);font-size:12px;margin-top:16px;text-align:center;">
-      개발자는 아이디어만 제공 · AI Agent가 문서·코드·발표를 일괄 생성
-    </p>
+    <div class="tech-row">
+      <div class="tech-chip">Flutter<span>크로스플랫폼 · Hot Reload</span></div>
+      <div class="tech-chip">Riverpod<span>상태 관리 · 테스트 용이</span></div>
+      <div class="tech-chip">Hive<span>오프라인 저장 · 고속 직렬화</span></div>
+      <div class="tech-chip">Claude Code<span>AI Agent 보조 개발</span></div>
+    </div>
   </div>
 </section>
 
 <script>
   mermaid.initialize({ startOnLoad: true, theme: 'dark' });
 
-  // 진행 바 & 슬라이드 번호
   const slides = document.querySelectorAll('.slide');
-  const progress = document.getElementById('progress');
-  const slideNum = document.getElementById('slideNum');
+  const prog = document.getElementById('progress');
+  const snum = document.getElementById('snum');
   const total = slides.length;
 
-  function updateProgress() {
-    const scrollY = window.scrollY;
+  function update() {
     const docH = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docH > 0 ? (scrollY / docH) * 100 : 0;
-    progress.style.width = pct + '%';
-
-    let current = 1;
-    slides.forEach((s, i) => {
-      const rect = s.getBoundingClientRect();
-      if (rect.top <= window.innerHeight / 2) current = i + 1;
-    });
-    slideNum.textContent = String(current).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    prog.style.width = (docH > 0 ? window.scrollY / docH * 100 : 0) + '%';
+    let cur = 1;
+    slides.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight / 2) cur = i + 1; });
+    snum.textContent = String(cur).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
   }
 
-  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('scroll', update, { passive: true });
 
-  // 키보드 네비게이션
   document.addEventListener('keydown', e => {
-    if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) {
+    const cur = Math.round(window.scrollY / window.innerHeight);
+    if (['ArrowDown','ArrowRight',' '].includes(e.key)) {
       e.preventDefault();
-      const cur = Math.round(window.scrollY / window.innerHeight);
-      if (cur < total - 1) window.scrollTo({ top: (cur + 1) * window.innerHeight, behavior: 'smooth' });
+      if (cur < total - 1) window.scrollTo({ top: (cur+1)*window.innerHeight, behavior:'smooth' });
     }
-    if (['ArrowUp', 'ArrowLeft'].includes(e.key)) {
+    if (['ArrowUp','ArrowLeft'].includes(e.key)) {
       e.preventDefault();
-      const cur = Math.round(window.scrollY / window.innerHeight);
-      if (cur > 0) window.scrollTo({ top: (cur - 1) * window.innerHeight, behavior: 'smooth' });
+      if (cur > 0) window.scrollTo({ top: (cur-1)*window.innerHeight, behavior:'smooth' });
     }
   });
 </script>
