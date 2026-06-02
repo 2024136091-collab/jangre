@@ -8,7 +8,12 @@ style: |
   h1 { color: #e94560; }
   h2 { color: #0f3460; background: #e94560; padding: 4px 12px; border-radius: 4px; }
   table { font-size: 0.85em; }
+  table td, table th { color: #eaeaea !important; border-color: #0f3460 !important; }
+  table tr { background-color: rgba(255,255,255,0.05) !important; }
+  table tr:nth-child(2n) { background-color: rgba(255,255,255,0.1) !important; }
   code { background: #0f3460; color: #eaeaea; }
+  blockquote { color: #eaeaea; border-left-color: #e94560; }
+  li { color: #eaeaea; }
 ---
 
 # 텍스트 RPG
@@ -49,6 +54,20 @@ style: |
 | 스토리 분기 | 스탯·아이템·플래그 조건부 선택지 |
 | 인벤토리·장비 | 20슬롯, 무기·방어구 슬롯 |
 | 다중 엔딩 | 5종 이상, 선택 이력과 스탯 반영 |
+
+---
+
+## Flutter 구현 화면
+
+| 화면 | 파일 | 주요 기능 |
+|---|---|---|
+| 타이틀 | `title_screen.dart` | 게임 시작, 저장 슬롯 선택 |
+| 스토리 | `story_screen.dart` | 장면 텍스트, 조건부 선택지 |
+| 전투 | `battle_screen.dart` | 턴제 전투, 스킬·아이템·도망 |
+| 인벤토리 | `inventory_screen.dart` | 20슬롯, 장비 착탈 |
+| 엔딩 | `ending_screen.dart` | 5종 엔딩, 결과 요약 |
+
+> 모든 화면은 `StatefulWidget` 또는 `ConsumerWidget` 기반
 
 ---
 
